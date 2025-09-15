@@ -1,88 +1,81 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Intro from "./IntroTransition";
+import CursorEffects from "./CursorEffect";
+import Introo from "./Intro";
+import GlitchText from "./GlitchEffect";
 
-export default function App() {
-  const [glitch, setGlitch] = useState(false);
+function EntryFlow() {
+  const [stage, setStage] = useState("entry");
+  const [dots, setDots] = useState("");
+  const [fall, setFall] = useState(false);
 
+  // handle dots animation
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGlitch((g) => !g);
-    }, 400);
-    return () => clearInterval(interval);
-  }, []);
-
-  // cursor effect
-  useEffect(() => {
-    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-
-    if (isTouch) {
-      return;
+    if (stage === "transition") {
+      let count = 0;
+      const interval = setInterval(() => {
+        count++;
+        if (count <= 3) {
+          setDots(".".repeat(count));
+        }
+        if (count === 3) {
+          clearInterval(interval);
+          setTimeout(() => setFall(true), 800);
+          setTimeout(() => setStage("intro"), 2000);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
     }
-
-    const dot = document.createElement("div");
-    dot.className = "cursor-dot";
-    document.body.appendChild(dot);
-
-    const moveHandler = (e) => {
-      dot.style.left = `${e.clientX}px`;
-      dot.style.top = `${e.clientY}px`;
-
-      const sparkCount = Math.floor(6 + Math.random() * 5);
-      for (let i = 0; i < sparkCount; i++) {
-        const spark = document.createElement("div");
-        spark.className = "spark";
-        spark.style.left = `${e.clientX}px`;
-        spark.style.top = `${e.clientY}px`;
-
-        spark.style.setProperty("--dx", `${(Math.random() - 0.5) * 120}px`);
-        spark.style.setProperty("--dy", `${50 + Math.random() * 100}px`);
-        spark.style.setProperty("--duration", `${0.6 + Math.random() * 0.8}s`);
-
-        document.body.appendChild(spark);
-        setTimeout(() => spark.remove(), 1500);
-      }
-    };
-
-    window.addEventListener("mousemove", moveHandler);
-
-    return () => {
-      window.removeEventListener("mousemove", moveHandler);
-      dot.remove();
-    };
-  }, []);
+  }, [stage]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-center font-mono overflow-hidden animate-flickerBg">
-      <h1
-        className={`relative text-5xl font-extrabold mb-6 transition-all duration-150 ${
-          glitch ? "text-red-600" : "text-red-400"
-        }`}
-        style={{ textShadow: "0 0 8px red, 0 0 18px darkred" }}
-      >
-        <GlitchText text="Hello" />
-      </h1>
-    </div>
+    <>
+      {stage === "entry" && (
+        <div
+          className="min-h-screen flex flex-col items-center justify-center text-center font-mono overflow-hidden animate-flickerBg"
+          onClick={() => setStage("transition")}
+        >
+          <h1
+            className="relative text-5xl font-extrabold mb-6 text-red-500 transition-all duration-500"
+            style={{ textShadow: "0 0 8px red, 0 0 18px darkred" }}
+          >
+            <GlitchText text={`Hello${dots}`} />
+            <span className={fall ? "falling-dot" : ""}></span>
+          </h1>
+          <p className="mt-4 text-sm text-gray-400 animate-pulse">
+            Click to enter
+          </p>
+        </div>
+      )}
+
+      {stage === "transition" && (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-black text-center font-mono overflow-hidden">
+          <h1
+            className={`relative text-5xl font-extrabold mb-6 text-red-500 transition-transform duration-1000 ${
+              fall ? "move-down" : ""
+            }`}
+            style={{ textShadow: "0 0 8px red, 0 0 18px darkred" }}
+          >
+            <GlitchText text={`Hello${dots}`} />
+            <span className={fall ? "falling-dot" : ""}></span>
+          </h1>
+        </div>
+      )}
+
+      {stage === "intro" && <Intro />}
+    </>
   );
 }
 
-// flicker text effect
-function GlitchText({ text }) {
-  const [display, setDisplay] = useState(text);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (Math.random() < 0.2) {
-        const idx = Math.floor(Math.random() * text.length);
-        const chars = [...text];
-        const creepyChars = ["#", "%", "@", "¥", "§", "£"];
-        chars[idx] = creepyChars[Math.floor(Math.random() * creepyChars.length)];
-        setDisplay(chars.join(""));
-      } else {
-        setDisplay(text);
-      }
-    }, 120);
-
-    return () => clearInterval(interval);
-  }, [text]);
-
-  return <span className="transition-all duration-75">{display}</span>;
+export default function App() {
+  return (
+    <Router>
+      <CursorEffects />
+      <Routes>
+        <Route path="/" element={<EntryFlow />} />
+        <Route path="/intro" element={<Introo />} />
+      </Routes>
+    </Router>
+  );
 }
