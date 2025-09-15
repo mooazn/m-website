@@ -12,9 +12,12 @@ export default function App() {
 
   // cursor effect
   useEffect(() => {
-    
-    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
-    
+    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+    if (isTouch) {
+      return;
+    }
+
     const dot = document.createElement("div");
     dot.className = "cursor-dot";
     document.body.appendChild(dot);
@@ -23,7 +26,6 @@ export default function App() {
       dot.style.left = `${e.clientX}px`;
       dot.style.top = `${e.clientY}px`;
 
-      // spawn 6–10 sparks each move
       const sparkCount = Math.floor(6 + Math.random() * 5);
       for (let i = 0; i < sparkCount; i++) {
         const spark = document.createElement("div");

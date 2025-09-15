@@ -81,3 +81,14 @@ body {
     cursor: auto;
   }
 }
+
+@media (max-width: 768px) {
+  .cursor-dot,
+  .spark {
+    display: none !important;
+  }
+
+  body {
+    cursor: auto;
+  }
+}
