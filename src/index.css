@@ -34,12 +34,10 @@ body::before {
   to { transform: translate(-5%, -5%); }
 }
 
-/* Hide default cursor */
 body {
   cursor: none;
 }
 
-/* Glowing red dot */
 .cursor-dot {
   position: fixed;
   top: 0;
@@ -54,7 +52,6 @@ body {
   z-index: 9999;
 }
 
-/* Sparks */
 .spark {
   position: fixed;
   width: 5px;
