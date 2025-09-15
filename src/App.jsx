@@ -12,6 +12,9 @@ export default function App() {
 
   // cursor effect
   useEffect(() => {
+    
+    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+    
     const dot = document.createElement("div");
     dot.className = "cursor-dot";
     document.body.appendChild(dot);

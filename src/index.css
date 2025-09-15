@@ -70,3 +70,14 @@ body {
     opacity: 0;
   }
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .cursor-dot,
+  .spark {
+    display: none !important;
+  }
+
+  body {
+    cursor: auto;
+  }
+}
